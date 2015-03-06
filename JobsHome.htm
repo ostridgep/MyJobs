@@ -90,8 +90,10 @@
 var today, todayNumber, mondayNumber, sundayNumber, monday, sunday;
 var EmployeeID=localStorage.getItem("EmployeeID")
 html5sql.openDatabase("com.PJO.MyJobs","MyJobs", 5*1024*1024);	
+setHomeCounts()
 
-
+function setHomeCounts()
+{
 	html5sql.process("SELECT * FROM MyOperations left join myoperationssplit on myoperations.orderno = myoperationssplit.orderno and myoperations.opno = myoperationssplit.opno where myoperationssplit.assignedto ='"+EmployeeID+"'",
 	 function(transaction, results, rowsArray){
 
@@ -101,19 +103,29 @@ html5sql.openDatabase("com.PJO.MyJobs","MyJobs", 5*1024*1024);
 			 function(transaction, results, rowsArray){
 					$( "#Notifications").html(rowsArray.length)
 					
-					html5sql.process("SELECT * FROM MyMessages where Type <> 'OM' order by type DESC",
+					html5sql.process("SELECT * FROM MyMessages where state like '%0%'  and type <> 'MYJOBSSYSMSG';",
 					 function(transaction, results, rowsArray){
 							$( "#Team").html(rowsArray.length)
-							if (rowsArray.length> 0){
-								if(rowsArray[0].type =='SM'){
-									$( "#SystemMessage").html(rowsArray[0].msgtext)
-								}
-							}
 							
-							html5sql.process("SELECT * FROM tsdata ",
+
+							
+							html5sql.process("SELECT * FROM MyMessages where type = 'MYJOBSSYSMSG' and msgfromid = 'SYSTEM';",
 							 function(transaction, results, rowsArray){
-									$( "#Timesheets").html(rowsArray.length)
-									
+									if (rowsArray.length>0){
+										//alert(rowsArray[0].msgsubject)
+								   		 $( "#SystemMessage").html(rowsArray[0].msgsubject+"<BR><BR>"+rowsArray[0].msgtext)		
+									}
+									html5sql.process("SELECT * FROM tsdata ",
+											 function(transaction, results, rowsArray){
+													$( "#Timesheets").html(rowsArray.length)
+													
+
+												
+											 },
+											 function(error, statement){
+
+											 }        
+											);									
 
 								
 							 },
@@ -140,6 +152,7 @@ html5sql.openDatabase("com.PJO.MyJobs","MyJobs", 5*1024*1024);
 
 	 }        
 	);
+}
 
 
 
@@ -205,7 +218,8 @@ function startBGSync()
 		 document.getElementById("transactionalSyncDetails").innerHTML ="Last Synced: "+syncDT.substring(0,4)+"-"+syncDT.substring(4,6)+"-"+syncDT.substring(6,8)+" "+syncDT.substring(8,10)+":"+syncDT.substring(10,12)+"<BR>"+localStorage.getItem('LastSyncTransactionalDetails')+"  "
 		 syncDT=localStorage.getItem('LastSyncUpload')
 		 document.getElementById("uploadSyncDetails").innerHTML ="Last Synced: "+syncDT.substring(0,4)+"-"+syncDT.substring(4,6)+"-"+syncDT.substring(6,8)+" "+syncDT.substring(8,10)+":"+syncDT.substring(10,12)+"<BR>"+localStorage.getItem('LastSyncUploadDetails')
-
+		 setHomeCounts();
+		 $( "#JobsHome").trigger('create');	
 
 		 };
    } else {

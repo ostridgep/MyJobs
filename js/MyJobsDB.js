@@ -12,9 +12,15 @@ var syncDetsSet=false;
 var demoDataLoaded=0;
 var syncTransactionalDetsUpdated=false;
 var syncReferenceDetsUpdated=false;
+function sendSMS(to, message)
+{
+    $.post("https://sms.cginotify.com/api/SMS/Send",{ LicenseKey: "hmJks0HcfKplAP2i4vuVrXxThFbj4JYfHmRRB1Dw", PhoneNumbers: to, Message : message}, function(data, status){
+       // alert("Data: " + data + "\nStatus: " + status);
+    });
+}
 function convertDate(dt){
-var fdt=""
-	fdt = dt.substring(0,4)+"-"+dt.substring(4,6)+"-"+dt.substring(6,9)+dt.substring(9,11)+":"+dt.substring(11,13)
+var fdt="";
+	fdt = dt.substring(0,4)+"-"+dt.substring(4,6)+"-"+dt.substring(6,9)+dt.substring(9,11)+":"+dt.substring(11,13);
 
 return fdt;
 }
@@ -24,7 +30,8 @@ function requestSAPData(page,params){
 	opMessage(SAPServerPrefix+page+params);
 	var myurl=SAPServerPrefix+page+params;
 
-   $.getJSON(myurl);
+  $.getJSON(myurl);
+  
 }
 function sendSAPData(page){
 	opMessage(page);
@@ -55,10 +62,10 @@ function opLog(msg){
 nowd=getDate();
 nowt=getTime();
 dtstamp=nowd+nowt;
-parTrace=localStorage.getItem('TRACE');
 
-var sqlstatement='INSERT INTO LogFile (datestamp , type, message ) VALUES ("'+dtstamp+'","I","'+ msg+'");'
-	if (parTrace=='ON'){
+
+var sqlstatement='INSERT INTO LogFile (datestamp , type, message ) VALUES ("'+dtstamp+'","I","'+ msg+'");';
+	if (localStorage.Trace=='ON'){
 		html5sql.process(sqlstatement,
 						 function(){
 							 //alert("Success Creating Tables");
@@ -77,7 +84,7 @@ xtraceState="";
 		["SELECT * from MyWorkConfig where paramname = 'TRACE'"],
 		function(transaction, results, rowsArray){
 			if( rowsArray.length > 0) {
-				traceState= rowsArray[0].paramvalue
+				traceState= rowsArray[0].paramvalue;
 				}
 			localStorage.setItem('Trace',traceState);
 			$('#traceState').val(traceState); 	
@@ -99,12 +106,12 @@ function databaseExists(){
 				return(true);
 				}
 			//alert("Database does not exist")
-			return(false)
+			return(false);
 
 		},
 		 function(error, statement){
 			 window.console&&console.log("Error: " + error.message + " when processing " + statement);
-			 return(false)
+			 return(false);
 		 }   
 	);
 	
@@ -210,9 +217,9 @@ function SetConfigParam(paramName, paramValue){
 		["SELECT * from MyWorkConfig where paramname = '"+paramName+"'"],
 		function(transaction, results, rowsArray){
 			if( rowsArray.length > 0) {
-				sqlstatement="UPDATE MyWorkConfig SET paramvalue = '"+paramValue+"' WHERE paramname = '"+paramName+"';"
+				sqlstatement="UPDATE MyWorkConfig SET paramvalue = '"+paramValue+"' WHERE paramname = '"+paramName+"';";
 				}else{
-				sqlstatement="INSERT INTO MyWorkConfig (paramname , paramvalue ) VALUES ('"+paramName+"','"+paramValue+"');"
+				sqlstatement="INSERT INTO MyWorkConfig (paramname , paramvalue ) VALUES ('"+paramName+"','"+paramValue+"');";
 				}
 			html5sql.process(sqlstatement,
 			 function(){
@@ -221,7 +228,7 @@ function SetConfigParam(paramName, paramValue){
 			 function(error, statement){
 				opMessage("Error: " + error.message + " when SetConfigParam processing " + statement);
 			 }        
-			)
+			);
 		},
 		function(error, statement){
 		 opMessage("Error: " + error.message + " when SetConfigParam processing " + statement);          
@@ -229,11 +236,11 @@ function SetConfigParam(paramName, paramValue){
 	);
 }		
 function SetAllConfigParam(p1,v1,p2,v2,p3,v3,p4,v4,p5,v5){
-	SetConfigParam(p1,v1)
-	SetConfigParam(p2,v2)
-	SetConfigParam(p3,v3)
-	SetConfigParam(p4,v4)
-	SetConfigParam(p5,v5)
+	SetConfigParam(p1,v1);
+	SetConfigParam(p2,v2);
+	SetConfigParam(p3,v3);
+	SetConfigParam(p4,v4);
+	SetConfigParam(p5,v5);
 }
 //*************************************************************************************************************************
 //
@@ -277,21 +284,21 @@ var retVal= false;
 	 function(transaction, results, rowsArray){
 			if( rowsArray.length > 0) {
 			retval = true;
-			wait = false
+			wait = false;
 			//alert("hh")
 			}else{
-			wait = false
+			wait = false;
 			}
 		
 	 },
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when drop processing " + statement);
-		wait = false
+		wait = false;
 	 }        
 	);
 while(wait == true){
 }
-return(retVal)
+return(retVal);
 
 }
 function validateUserExists(u,p){
@@ -302,18 +309,18 @@ function validateUserExists(u,p){
 			if( rowsArray.length < 1) {
 			return(2);
 			}else if (rowsArray[0].password!=p){
-			return(1)
+			return(1);
 			}else {
-			return(0)
+			return(0);
 			}
 		
 	 },
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when drop processing " + statement);
-		return(2)
+		return(2);
 	 }        
 	);
-return(2)
+return(2);
 
 }
 function CheckSyncInterval(SyncType){
@@ -361,7 +368,7 @@ nowd=getDate();
 nowt=getTime();
 paramValue=nowd+nowt;
 var sqlstatement="";
-var lastsync=localStorage.getItem('LastSyncedDT')			
+var lastsync=localStorage.getItem('LastSyncedDT')	;		
 	if (paramName=='LASTSYNC_REFERENCE'){
 		localStorage.setItem('LastSyncReference',paramValue);
 
@@ -381,9 +388,9 @@ var lastsync=localStorage.getItem('LastSyncedDT')
 		["SELECT * from MyWorkConfig where paramname = '"+paramName+"'"],
 		function(transaction, results, rowsArray){
 			if( rowsArray.length > 0) {
-				sqlstatement="UPDATE MyWorkConfig SET paramvalue = '"+paramValue+"' WHERE paramname = '"+paramName+"';"
+				sqlstatement="UPDATE MyWorkConfig SET paramvalue = '"+paramValue+"' WHERE paramname = '"+paramName+"';";
 				}else{
-				sqlstatement="INSERT INTO MyWorkConfig (paramname , paramvalue ) VALUES ('"+paramName+"','"+paramValue+"');"
+				sqlstatement="INSERT INTO MyWorkConfig (paramname , paramvalue ) VALUES ('"+paramName+"','"+paramValue+"');";
 				}
 			html5sql.process(sqlstatement,
 			 function(){
@@ -392,7 +399,7 @@ var lastsync=localStorage.getItem('LastSyncedDT')
 			 function(error, statement){
 				opMessage("Error: " + error.message + " when Last Sync Update processing " + statement);
 			 }        
-			)
+			);
 		},
 		function(error, statement){
 		 opMessage("Error: " + error.message + " when Last Sync Update processing " + statement);          
@@ -405,7 +412,7 @@ var lastsync=localStorage.getItem('LastSyncedDT')
 }
 
 function syncTransactional(){
-var SAPServerSuffix=""
+var SAPServerSuffix="";
 
 	if (!CheckSyncInterval('TRANSACTIONAL')){return; }
 	opMessage("Synchronizing Transactional Data");
@@ -425,14 +432,14 @@ var SAPServerSuffix=""
 									SAPServerPrefix=$.trim(rowsArray[0].paramvalue);
 									requestSAPData("MyJobsOrders.htm",SAPServerSuffix);
 									requestSAPData("MyJobsNotifications.htm",SAPServerSuffix);
-									requestSAPData("MyJobsMessages.htm",SAPServerSuffix)
+									requestSAPData("MyJobsMessages.htm",SAPServerSuffix);
 						 }
 						 
 					},
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)
+				);
 			}
 		},
 		function(error, statement){
@@ -449,20 +456,22 @@ var SAPServerSuffix=""
 }
 
 function syncUpload(){
-var SAPServerSuffix=""
+var SAPServerSuffix="";
 var newDets="";
+var currentUser="";
 syncDetsSet=false;
 
 sapCalls = 0;
 	if (!CheckSyncInterval('UPLOAD')){return; }
 	opMessage("Synchronizing Upload Data");
-var syncDetails = false	
+	
+var syncDetails = false	;
 	html5sql.process(
 		["SELECT * from MyUserDets"],
 		function(transaction, results, rowsArray){
 			if( rowsArray.length > 0) {
-				
-				SAPServerSuffix="?jsonCallback=?&sap-client=700&sap-user="+rowsArray[0].user+"&sap-password="+rowsArray[0].password
+				curremtUser="&username="+rowsArray[0].user;
+				SAPServerSuffix="?jsonCallback=?&sap-client=700&sap-user="+rowsArray[0].user+"&sap-password="+rowsArray[0].password;
 // Process Vehicle Defects
 				html5sql.process("SELECT * from MyNewJobs where state = 'VEHICLEDEFECT'",
 					function(transaction, results, rowsArray){
@@ -484,14 +493,23 @@ var syncDetails = false
 							opMessage("NewJob Details="+newDets);
 							SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));
 							sapCalls+=1;
-							sendSAPData(SAPServerPrefix+"MyJobsCreateVehicleDefect.htm"+SAPServerSuffix+newDets);
+							
+							html5sql.process("UPDATE MyNewJobs SET state = 'SENDING' WHERE id='"+item['id']+"'",
+									 function(){
+										sendSAPData(SAPServerPrefix+"MyJobsCreateVehicleDefect.htm"+SAPServerSuffix+newDets);
+									 },
+									 function(error, statement){
+										 
+										 opMessage("Error: " + error.message + " when processing " + statement);
+									 }        
+							);
 						 }
 						 
 					},
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)	
+				);	
 // Process New Notifications				
 				html5sql.process("SELECT * from MyNotifications where notifno = 'NEW'",
 					function(transaction, results, rowsArray){
@@ -515,7 +533,16 @@ var syncDetails = false
 								opMessage("New Notifications Details="+newDets);
 								SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));
 								sapCalls+=1;
-								sendSAPData(SAPServerPrefix+"MyJobsCreateNotification.htm"+SAPServerSuffix+newDets);
+								
+								html5sql.process("UPDATE MyNotifications SET notifno = 'SENDING' WHERE id='"+item['id']+"'",
+										 function(){
+											sendSAPData(SAPServerPrefix+"MyJobsCreateNotification.htm"+SAPServerSuffix+newDets);
+										 },
+										 function(error, statement){
+											 
+											 opMessage("Error: " + error.message + " when processing " + statement);
+										 }        
+								);
 							}
 						 }
 						 
@@ -523,7 +550,7 @@ var syncDetails = false
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)
+				);
 // Process Time Confirmations
 				html5sql.process("SELECT * from MyTimeConfs where confno = 'NEW'",
 					function(transaction, results, rowsArray){
@@ -537,22 +564,31 @@ var syncDetails = false
 							for (var n = 0; n < rowsArray.length; n++) {
 								item = rowsArray[n];
 								if(item['final']=="Yes"){
-									fconf="X"
+									fconf="X";
 								}else{
-									fconf=""
+									fconf="";
 								}									
 								newDets='&ORDERNO='+item['orderno']+'&OPNO='+item['opno']+'&REASON='+item['description']+'&TIME='+item['duration']+'&USER='+item['user']+'&RECNO='+item['id']+'&SDATE='+item['date']+'&STIME='+item['time']+'&EDATE='+item['enddate']+'&ETIME='+item['endtime']+'&ACTIVITYTYPE='+item['type']+'&FINAL='+fconf;
 								opMessage("NewTconf Details="+newDets);
 								SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));
 								sapCalls+=1;
-								sendSAPData(SAPServerPrefix+"MyJobsCreateTConf.htm"+SAPServerSuffix+newDets);
+								
+								html5sql.process("UPDATE MyTimeConfs SET confno = 'SENDING' WHERE id='"+item['id']+"'",
+										 function(){
+											sendSAPData(SAPServerPrefix+"MyJobsCreateTConf.htm"+SAPServerSuffix+newDets);
+										 },
+										 function(error, statement){
+											 
+											 opMessage("Error: " + error.message + " when processing " + statement);
+										 }        
+								);
 							 }
 						}
 					},
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)	
+				);	
 
 // Process Status Updates				
 				html5sql.process("SELECT * from MyStatus where state = 'NEW'",
@@ -570,14 +606,23 @@ var syncDetails = false
 								opMessage("Newstatus Details="+newDets);
 								SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));		
 								sapCalls+=1;							
-								sendSAPData(SAPServerPrefix+"MyJobsUpdateStatus.htm"+SAPServerSuffix+newDets);
+								
+								html5sql.process("UPDATE MyStatus SET state = 'SENDING' where id='"+item['id']+"'",
+										 function(){
+											sendSAPData(SAPServerPrefix+"MyJobsUpdateStatus.htm"+SAPServerSuffix+newDets);
+										 },
+										 function(error, statement){
+											 
+											 opMessage("Error: " + error.message + " when processing " + statement);
+										 }        
+								);
 							}
 						} 
 					},
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)	
+				);	
 // Upload the Messages READ Indicator
 				
 				html5sql.process("SELECT * from MyMessages where state = 'READ'",
@@ -600,17 +645,26 @@ var syncDetails = false
 
 							item = rowsArray[0];
 
-							newDets='&ID='+item['id']+'&DOCID='+item['msgid']
+							newDets='&ID='+item['id']+'&DOCID='+item['msgid'];
 							opMessage("READ Status= "+newDets);
 							SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));
-							sendSAPData(SAPServerPrefix+"MyJobsMessageSetReadFlag.htm"+SAPServerSuffix+newDets);
+							
+							html5sql.process("UPDATE MyMessages SET state = 'SENDING' WHERE id='"+item['id']+"'",
+									 function(){
+									sendSAPData(SAPServerPrefix+"MyJobsMessageSetReadFlag.htm"+SAPServerSuffix+newDets);
+									 },
+									 function(error, statement){
+										 
+										 opMessage("Error: " + error.message + " when processing " + statement);
+									 }        
+							);	
 						 }
 						 
 					},
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)				
+				);				
 // Upload the NEW Sent Messages
 			
 				html5sql.process("SELECT * from MyMessages where state = 'NEW'",
@@ -633,20 +687,31 @@ var syncDetails = false
 
 							item = rowsArray[0];
 
-							newDets='&ID='+item['id']+'&TO='+item['msgtoid']+'&SUBJECT='+item['msgsubject']+'&CONTENT='+item['msgtext']
+							newDets='&ID='+item['id']+'&TO='+item['msgtoid']+'&SUBJECT='+item['msgsubject']+'&CONTENT='+item['msgtext'];
 							opMessage("SEND Status= "+newDets);
 							SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));
 							
-							sendSAPData(SAPServerPrefix+"MyJobsMessageSend.htm"+SAPServerSuffix+newDets);
+							html5sql.process("UPDATE MyMessages SET state = 'SENDING' WHERE id='"+item['id']+"'",
+										 function(){
+										      sendSAPData(SAPServerPrefix+"MyJobsMessageSend.htm"+SAPServerSuffix+newDets);
+										 },
+										 function(error, statement){
+											 
+											 opMessage("Error: " + error.message + " when processing " + statement);
+										 }        
+								);	
+							
 						 }
 						 
 					},
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)					
+				);					
 				
-				
+// Check for New Messages to retrieve
+				SAPServerPrefix=$.trim(localStorage.getItem('ServerName'));
+				requestSAPData("MyJobsMessages.htm",SAPServerSuffix+currentUser);
 			}
 		},
 		function(error, statement){
@@ -664,7 +729,7 @@ var syncDetails = false
 
 function syncReference(){
 
-var SAPServerSuffix=""
+var SAPServerSuffix="";
 	if (!CheckSyncInterval('REFERENCE')){return; }
 	opMessage("Synchronizing Reference Data");
 
@@ -682,10 +747,9 @@ var SAPServerSuffix=""
 							syncReferenceDetsUpdated=false;
 							SAPServerPrefix=$.trim(rowsArray[0].paramvalue);							
 							opMessage("Sending SAP Request for Ref Data");	
-							requestSAPData("MyWorkRefData.htm",SAPServerSuffix);
-							requestSAPData("MyWorkRefDataCodes.htm",SAPServerSuffix+"&SCENARIO=MAMDEMOLG");
-							requestSAPData("MyWorkUsers.htm",SAPServerSuffix);
-
+							requestSAPData("MyJobsRefData.htm",SAPServerSuffix);
+							requestSAPData("MyJobsRefDataCodes.htm",SAPServerSuffix+"&SCENARIO=MAMDEMO");
+							requestSAPData("MyJobsUsers.htm",SAPServerSuffix);
 							requestSAPData("MyJobsVehicles.htm",SAPServerSuffix);
 							requestSAPData("MyJobsFunclocs.htm",SAPServerSuffix);
 						 }
@@ -694,7 +758,7 @@ var SAPServerSuffix=""
 					function(error, statement){
 						opMessage("Error: " + error.message + " when syncTransactional processing " + statement); 
 					}
-				)
+				);
 			}
 		},
 		function(error, statement){
@@ -719,7 +783,7 @@ var SAPServerSuffix=""
 //*************************************************************************************************************************
 function getSurveyType(type){
 
-var TypeName=""
+var TypeName="";
 switch(type) {
     case "1":
         TypeName="CheckBox";
@@ -754,7 +818,7 @@ switch(type) {
 
 }
 
-	return TypeName
+	return TypeName;
 
 }
 function updateSurveys(id, name, type, description,datestamp)
@@ -768,7 +832,7 @@ function updateSurveys(id, name, type, description,datestamp)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when Last Sync Update processing " + statement);
 	 }        
-	)	
+	);
 }
 function updateSurveysDetail(detailid, group, sortseq,name,type,description,defaultval, next, attribute1,attribute2,attribute3,attribute4)
 {
@@ -779,7 +843,7 @@ function updateSurveysDetail(detailid, group, sortseq,name,type,description,defa
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when updateSurveysDetail processing " + statement);
 	 }        
-	)	
+	);	
 }
 
 function deleteAllSurveys(id)
@@ -794,7 +858,7 @@ function deleteAllSurveys(id)
 		 function(error, statement){
 			opMessage("Error: " + error.message + " when deleteAllSurveys processing " + statement);
 		 }        
-	)	
+	);	
 }
 function deleteAllSurveysDetail(id)
 {
@@ -808,7 +872,7 @@ function deleteAllSurveysDetail(id)
 		 function(error, statement){
 			opMessage("Error: " + error.message + " when deleteAllSurveysDetail processing " + statement);
 		 }        
-	)	
+	);	
 }
 function createSurveys(name,type,description,datecreated)
 {
@@ -822,7 +886,7 @@ function createSurveys(name,type,description,datecreated)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createSurveysDetailAnswers processing " + statement);
 	 }        
-	)
+	);
 }
 function createSurveysDetail(surveyid, group, sortseq,name,type,description,defaultval, next, attribute1,attribute2,attribute3,attribute4)
 {
@@ -835,7 +899,7 @@ function createSurveysDetail(surveyid, group, sortseq,name,type,description,defa
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createSurveysDetail processing " + statement);
 	 }        
-	)
+	);
 }
 function createSurveysDetailAnswers(surveyid,detailid,answertype,answercode,description, defaultval)
 {
@@ -848,7 +912,7 @@ function createSurveysDetailAnswers(surveyid,detailid,answertype,answercode,desc
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createSurveysDetailAnswers processing " + statement);
 	 }        
-	)
+	);
 }
 //*************************************************************************************************************************
 //
@@ -865,7 +929,7 @@ function updateOrderEquipment(orderno, property, funcloc, equipment)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when updateOrderEquipment processing " + statement);
 	 }        
-	)	
+	);
 }
 
 function updateTaskLongText(id,longtext)
@@ -878,7 +942,7 @@ function updateTaskLongText(id,longtext)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when updateTaskLongText processing " + statement);
 	 }        
-	)
+	);
 }
 function updateOrderAddress(orderno, house, houseno, street, district, city, postcode, workaddress)
 {
@@ -890,7 +954,7 @@ function updateOrderAddress(orderno, house, houseno, street, district, city, pos
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when updateOrderAddress processing " + statement);
 	 }        
-	)
+	);
 }
 function updateNotifLatLong(notifno, fname, latlong)
 {
@@ -904,7 +968,7 @@ res=notifno.split("|");
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when updateNotifLatLong processing " + statement);
 	 }        
-	)
+	);
 }
 function updateOrderLatLong(orderno, fname, latlong)
 {
@@ -916,7 +980,7 @@ function updateOrderLatLong(orderno, fname, latlong)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when updateOrderLatLong processing " + statement);
 	 }        
-	)
+	);
 }
 
 function updateOperationStatus(orderno, opno, code, status)
@@ -933,7 +997,7 @@ function updateOperationStatus(orderno, opno, code, status)
 				 function(error, statement){
 					opMessage("Error: " + error.message + " when InsertOperationStatus processing " + statement);
 				 }        
-				)
+				);
 		},
 		function(error, statement){
 		 
@@ -958,7 +1022,7 @@ function createTConf(order,opno,empid,type,startdate,starttime,enddate,endtime,d
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createTConf processing " + statement);
 	 }        
-	)
+	);
 }
 function xxcreateNotification(type,priority,group,code,grouptext,codetext,description,details,startdate,funcloc,equipment)
 {
@@ -974,12 +1038,12 @@ var ReportedBy=localStorage.getItem("MobileUser");
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createNotification processing " + statement);
 	 }        
-	)
+	);
 }
 function createVehicleDefect(type,description,details,equipment)
 {
-var startdate=getSAPDate()
-var starttime=getSAPTime()
+var startdate=getSAPDate();
+var starttime=getSAPTime();
 var ReportedBy=localStorage.getItem("MobileUser");
 //alert("INSERT INTO  MyNewJobs (state , type, date, time, shorttext, longtext, equipment, reportedby) VALUES ("+
 //					 "'VEHICLEDEFECT','"+type+"','"+startdate+"','"+starttime+"','"+description+"','"+details+"','"+equipment+"','"+ReportedBy+"');");
@@ -992,7 +1056,7 @@ var ReportedBy=localStorage.getItem("MobileUser");
 		 //alert("Error: " + error.message + " when createNotification processing " + statement);
 		opMessage("Error: " + error.message + " when createNotification processing " + statement);
 	 }        
-	)
+	);
 	
 }
 function createTask(notifno,groupcd,codecd, grouptext, codetext, description)
@@ -1006,7 +1070,7 @@ function createTask(notifno,groupcd,codecd, grouptext, codetext, description)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createNotification processing " + statement);
 	 }        
-	)
+	);
 }
 
 
@@ -1020,7 +1084,7 @@ function createActivity(notifno,task,groupcd,codecd, grouptext, codetext, descri
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createActivity processing " + statement);
 	 }        
-	)
+	);
 }
 function createEffect(notifno,groupcd,codecd, grouptext, codetext, description)
 {
@@ -1033,7 +1097,7 @@ function createEffect(notifno,groupcd,codecd, grouptext, codetext, description)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createActivity processing " + statement);
 	 }        
-	)
+	);
 }
 function createCause(notifno,groupcd,codecd, grouptext, codetext, description)
 {
@@ -1046,7 +1110,7 @@ function createCause(notifno,groupcd,codecd, grouptext, codetext, description)
 	 function(error, statement){
 		opMessage("Error: " + error.message + " when createActivity processing " + statement);
 	 }        
-	)
+	);
 }
 //*************************************************************************************************************************
 //
@@ -1110,7 +1174,7 @@ function createTables(type) {
 					 'CREATE TABLE IF NOT EXISTS GASSurvey			    ( id integer primary key autoincrement, orderno TEXT, opno TEXT, make TEXT, model TEXT, location TEXT, dv1 TEXT, dv2 TEXT, dv3 TEXT, dv4 TEXT, dv5 TEXT, dv6 TEXT, dv7 TEXT, dv8 TEXT, dv9 TEXT, dv10 TEXT, dv11 TEXT, dv12 TEXT, dv13 TEXT, dv14 TEXT, dv15 TEXT);'+
 					 'CREATE TABLE IF NOT EXISTS GASSurveyHDR		    ( id integer primary key autoincrement, orderno TEXT, opno TEXT, date TEXT, signed TEXT, hv1 TEXT, hv2 TEXT, hv3 TEXT, hv4 TEXT, text1 TEXT, text2 TEXT, text3 TEXT);'+
 					 'CREATE VIEW viewoperationstatus as SELECT orderno, opno, statusdesc FROM myuserstatus where type = "OV" GROUP BY orderno, opno Order by id desc ;'+
-					 'CREATE VIEW viewprioritycodes as select myrefordertypes.scenario, myrefordertypes.type as ordertype, myrefordertypes.priorityprofile, myrefprioritytypes.priority as priority, myrefprioritytypes.description as prioritydesc from myrefordertypes left join myrefprioritytypes on myrefordertypes.priorityprofile = myrefprioritytypes.type where myrefordertypes.scenario = myrefprioritytypes.scenario;'
+					 'CREATE VIEW viewprioritycodes as select myrefordertypes.scenario, myrefordertypes.type as ordertype, myrefordertypes.priorityprofile, myrefprioritytypes.priority as priority, myrefprioritytypes.description as prioritydesc from myrefordertypes left join myrefprioritytypes on myrefordertypes.priorityprofile = myrefprioritytypes.type where myrefordertypes.scenario = myrefprioritytypes.scenario;';
 		html5sql.process(sqlstatement,
 						 function(){
 							emptyTables(type);
@@ -1186,7 +1250,7 @@ function dropTables() {
 						'DROP TABLE IF EXISTS GASSurveyHDR;'+
 						
 						'DROP VIEW IF EXISTS viewoperationstatus;'+
-						'DROP TABLE IF EXISTS viewprioritycodes;'
+						'DROP TABLE IF EXISTS viewprioritycodes;';
 
 						html5sql.process(sqlstatement,
 						 function(){
@@ -1247,7 +1311,7 @@ function emptyTables(type) {
 						'DELETE FROM  GASSurveyMake;'+
 						'DELETE FROM  GASSurveyModel;'+
 						'DELETE FROM  GASSurvey;'+
-						'DELETE FROM  GASSurveyHDR;'
+						'DELETE FROM  GASSurveyHDR;';
 						
 						
 
@@ -1295,6 +1359,78 @@ function emptyTables(type) {
 							 opMessage("Error: " + error.message + " when delete processing " + statement);
 						 }        
 				);
+}
+function resetTables() { 
+	var sqlstatement="";
+
+	sqlstatement=	'DELETE FROM  MyOrders;'+
+					'DELETE FROM  MyOperations;'+
+					'DELETE FROM  MyOperationsSplit;'+
+					'DELETE FROM  MyPartners;'+
+					'DELETE FROM  MyMaterials;'+
+					'DELETE FROM  MyAssets;'+
+					'DELETE FROM  MyUserStatus;'+
+					'DELETE FROM  MyOperationInfo;'+
+					'DELETE FROM  MyNotifications;'+
+					'DELETE FROM  MyItems;'+
+					'DELETE FROM  MyCauses;'+
+					'DELETE FROM  MyActivities;'+
+					'DELETE FROM  MyTasks;'+
+					'DELETE FROM  MyEffects;'+
+					'DELETE FROM  MyStatus;'+
+					'DELETE FROM  MyTimeConfs;'+
+					'DELETE FROM  MyNewJobs;'+
+					'DELETE FROM  MyRefUsers;'+
+					'DELETE FROM  MyRefOrderTypes;'+
+					'DELETE FROM  MyRefNotifTypes;'+
+					'DELETE FROM  MyRefPriorityTypes;'+
+					'DELETE FROM  MyRefUserStatusProfiles;'+
+					'DELETE FROM  MyWorkSyncDets;'+
+					'DELETE FROM  MyVehicles;'+
+					'DELETE FROM  MyVehicleCheck;'+
+					'DELETE FROM  MyMessages;'+
+					'DELETE FROM  Assets;'+
+					'DELETE FROM  LogFile;'+
+					'DELETE FROM  AssetClassVals;'+
+					'DELETE FROM  AssetInstalledEquip;'+
+					'DELETE FROM  AssetMeasurementPoints;'+
+					'DELETE FROM  RefNotifprofile;'+
+					'DELETE FROM  RefCodeGroups;'+
+					'DELETE FROM  RefCodes;'+  
+					'DELETE FROM  Surveys;'+	
+					'DELETE FROM  SurveysDetail;'+
+					'DELETE FROM  SurveysDetailAnswers;'+
+					'DELETE FROM  FuncLocs;'+
+					'DELETE FROM  TSActivities;'+	
+					'DELETE FROM  TSNPJobs;'+
+					'DELETE FROM  TSData;'+
+					'DELETE FROM  GASSurveyQ;'+	
+					'DELETE FROM  GASSurveyA;'+
+					'DELETE FROM  GASSurveyMake;'+
+					'DELETE FROM  GASSurveyModel;'+
+					'DELETE FROM  GASSurvey;'+
+					'DELETE FROM  GASSurveyHDR;';
+					
+					
+
+					html5sql.process(sqlstatement,
+					 function(){
+						requestDEMOData('TestData\\GASSurvey.json');
+						requestDEMOData('TestData\\GASSurveyHdr.json');
+						requestDEMOData('TestData\\TimeSheetNPJobs.json');
+						requestDEMOData('TestData\\TimeSheetActivities.json');
+						SetConfigParam('LASTSYNC_REFERENCE', "20120101010101");
+						SetConfigParam('LASTSYNC_TRANSACTIONAL', "20120101010101");
+						syncReference();
+						syncTransactional();
+						
+
+
+					 },
+					 function(error, statement){
+						 opMessage("Error: " + error.message + " when delete processing " + statement);
+					 }        
+			);
 }
 function DeleteLog() { 
 		html5sql.process("DELETE FROM LogFile",
@@ -1397,7 +1533,7 @@ function orderCB(MyOrders){
 							'DELETE FROM MyTimeConfs;'+
 							'DELETE FROM MyUserStatus;'+
 							'DELETE FROM MyOperationInfo;'+
-							'DELETE FROM MyStatus where state="SERVER";'
+							'DELETE FROM MyStatus where state="SERVER";';
 			
 			html5sql.process(sqlstatement,
 						 function(){
@@ -1418,7 +1554,7 @@ function orderCB(MyOrders){
 					 '"'+MyOrders.order[cntx].telno + '","'+MyOrders.order[cntx].type + '","'+MyOrders.order[cntx].priority + '","'+MyOrders.order[cntx].address + '","'+MyOrders.order[cntx].workaddress+ '","'+MyOrders.order[cntx].house+'",'+ 
 					 '"'+MyOrders.order[cntx].houseno+ '","'+MyOrders.order[cntx].street+ '","'+MyOrders.order[cntx].district+ '","'+MyOrders.order[cntx].city+ '","'+MyOrders.order[cntx].postcode+ '","'+MyOrders.order[cntx].gis+'",'+ 
 					 '"'+MyOrders.order[cntx].property+  '","'+MyOrders.order[cntx].funcloc+  '","'+MyOrders.order[cntx].equipment+'",'+ 
-					 '"'+MyOrders.order[cntx].propertygis+  '","'+MyOrders.order[cntx].funclocgis+  '","'+MyOrders.order[cntx].equipmentgis+ '","'+MyOrders.order[cntx].notifno+'");'
+					 '"'+MyOrders.order[cntx].propertygis+  '","'+MyOrders.order[cntx].funclocgis+  '","'+MyOrders.order[cntx].equipmentgis+ '","'+MyOrders.order[cntx].notifno+'");';
 				//Loop and write operations to DB
 				
 	 			//opMessage("Loading "+MyOrders.order[cntx].operation.length+" Operations");
@@ -1429,7 +1565,7 @@ function orderCB(MyOrders){
 					sqlstatement+='INSERT INTO MyOperations (orderno , opno, type , priority , shorttext , startdate, enddate, duration , status, apptstart, apptend) VALUES ('+
 						 '"'+MyOrders.order[cntx].orderno+  '","'+ MyOrders.order[cntx].operation[opscnt].opno+  '","'+ MyOrders.order[cntx].operation[opscnt].type+  '","'+MyOrders.order[cntx].operation[opscnt].priority+  '",'+
 						 '"'+MyOrders.order[cntx].operation[opscnt].shorttext+  '","'+ MyOrders.order[cntx].operation[opscnt].startdate+  '","'+ MyOrders.order[cntx].operation[opscnt].enddate+  '","'+  MyOrders.order[cntx].operation[opscnt].duration+  '",'+
-						 '"'+MyOrders.order[cntx].operation[opscnt].status+  '","'+ MyOrders.order[cntx].operation[opscnt].apptstart+  '","'+ MyOrders.order[cntx].operation[opscnt].apptend+'");'
+						 '"'+MyOrders.order[cntx].operation[opscnt].status+  '","'+ MyOrders.order[cntx].operation[opscnt].apptstart+  '","'+ MyOrders.order[cntx].operation[opscnt].apptend+'");';
 				
 					}
 				
@@ -1440,7 +1576,7 @@ function orderCB(MyOrders){
 					{	
 					
 					sqlstatement+='INSERT INTO MyOperationsSplit (orderno , opno, assignedto, duration) VALUES ('+
-						 '"'+MyOrders.order[cntx].orderno+  '","'+ MyOrders.order[cntx].operationsplit[opscnt].opno+  '","'+ MyOrders.order[cntx].operationsplit[opscnt].assignedto+  '","'+ MyOrders.order[cntx].operationsplit[opscnt].duration+'");'
+						 '"'+MyOrders.order[cntx].orderno+  '","'+ MyOrders.order[cntx].operationsplit[opscnt].opno+  '","'+ MyOrders.order[cntx].operationsplit[opscnt].assignedto+  '","'+ MyOrders.order[cntx].operationsplit[opscnt].duration+'");';
 				
 					}
 				//opMessage("Loading "+MyOrders.order[cntx].partner.length+" Partners");
@@ -1450,7 +1586,7 @@ function orderCB(MyOrders){
 					{	
 					sqlstatement+='INSERT INTO MyPartners (orderno , id, type , name , address , postcode , telno, notifno) VALUES ('+ 
 						'"'+MyOrders.order[cntx].orderno+  '","'+ MyOrders.order[cntx].partner[pcnt].id+  '","'+  MyOrders.order[cntx].partner[pcnt].type+  '","'+ MyOrders.order[cntx].partner[pcnt].name+  '",'+
-						'"'+MyOrders.order[cntx].partner[pcnt].address+  '","'+  MyOrders.order[cntx].partner[pcnt].postcode+  '","'+ MyOrders.order[cntx].partner[pcnt].telno+  '","'+ ""+'");'
+						'"'+MyOrders.order[cntx].partner[pcnt].address+  '","'+  MyOrders.order[cntx].partner[pcnt].postcode+  '","'+ MyOrders.order[cntx].partner[pcnt].telno+  '","'+ ""+'");';
 				}
 
 			//Loop and write components to DB
@@ -1459,7 +1595,7 @@ function orderCB(MyOrders){
 
 					sqlstatement+='INSERT INTO Mymaterials (orderno , id, material , description , qty) VALUES ('+ 
 						'"'+MyOrders.order[cntx].orderno+  '","'+ MyOrders.order[cntx].component[pcnt].item+  '","'+  MyOrders.order[cntx].component[pcnt].material+  '","'+
-						MyOrders.order[cntx].component[pcnt].description+  '","'+ MyOrders.order[cntx].component[pcnt].quantity+  '");'
+						MyOrders.order[cntx].component[pcnt].description+  '","'+ MyOrders.order[cntx].component[pcnt].quantity+  '");';
 				}				
 				
 				
@@ -1470,7 +1606,7 @@ function orderCB(MyOrders){
 					sqlstatement+='INSERT INTO MyUserStatus (type , orderno, opno , inact , status , statuscode , statusdesc) VALUES ('+
 						'"'+MyOrders.order[cntx].userstatus[pcnt].type+  '","'+  MyOrders.order[cntx].userstatus[pcnt].orderno+  '","'+ MyOrders.order[cntx].userstatus[pcnt].opno+  '",'+
 						'"'+MyOrders.order[cntx].userstatus[pcnt].inact+  '","'+  MyOrders.order[cntx].userstatus[pcnt].status+  '","'+  MyOrders.order[cntx].userstatus[pcnt].statuscode+  '",'+
-						'"'+MyOrders.order[cntx].userstatus[pcnt].statusdesc+'");'
+						'"'+MyOrders.order[cntx].userstatus[pcnt].statusdesc+'");';
 				}
 
 				//opMessage("Loading "+MyOrders.order[cntx].operationinfo.length+" OperationInfo");
@@ -1479,7 +1615,7 @@ function orderCB(MyOrders){
 					{	
 					sqlstatement+='INSERT INTO MyOperationInfo (orderno, opno , type , value1 , value2) VALUES ('+
 						'"'+MyOrders.order[cntx].operationinfo[pcnt].orderno+  '","'+  MyOrders.order[cntx].operationinfo[pcnt].opno+  '","'+  MyOrders.order[cntx].operationinfo[pcnt].type+  '",'+ 
-						'"'+MyOrders.order[cntx].operationinfo[pcnt].value1+  '","'+  MyOrders.order[cntx].operationinfo[pcnt].value2+'");'
+						'"'+MyOrders.order[cntx].operationinfo[pcnt].value1+  '","'+  MyOrders.order[cntx].operationinfo[pcnt].value2+'");';
 				}
 				
 				
@@ -1493,11 +1629,11 @@ function orderCB(MyOrders){
 					{
 					if (MyOrders.order[cntx].asset[acnt].equipment.length>0){
 						sqlstatement+='INSERT INTO MyAssets (orderno , id, type , name ) VALUES ('+
-							'"'+MyOrders.order[cntx].orderno+  '","'+   MyOrders.order[cntx].asset[acnt].equipment+  '","'+   'EQ'+  '","'+   MyOrders.order[cntx].asset[acnt].equidescr+'");'
+							'"'+MyOrders.order[cntx].orderno+  '","'+   MyOrders.order[cntx].asset[acnt].equipment+  '","'+   'EQ'+  '","'+   MyOrders.order[cntx].asset[acnt].equidescr+'");';
 						}
 						if (MyOrders.order[cntx].asset[acnt].funcloc.length>0){
 						sqlstatement+='INSERT INTO MyAssets (orderno , id, type , name ) VALUES ('+ 
-							'"'+MyOrders.order[cntx].orderno+  '","'+   MyOrders.order[cntx].asset[acnt].funcloc+  '","'+  'FL'+  '","'+   MyOrders.order[cntx].asset[acnt].funclocdesc+'");'
+							'"'+MyOrders.order[cntx].orderno+  '","'+   MyOrders.order[cntx].asset[acnt].funcloc+  '","'+  'FL'+  '","'+   MyOrders.order[cntx].asset[acnt].funclocdesc+'");';
 						}
 				}
 				//Loop and write TConfs to DB
@@ -1508,20 +1644,20 @@ function orderCB(MyOrders){
 				for(var acnt=0; acnt < MyOrders.order[cntx].tconf.length ; acnt++)
 					{	
 					if(MyOrders.order[cntx].tconf[acnt].description=="Travel"){
-						tcType = "Travel"
-						tcDesc=""
+						tcType = "Travel";
+						tcDesc="";
 					}else{
-						tcType = "Work"
-						tcDesc=MyOrders.order[cntx].tconf[acnt].description
+						tcType = "Work";
+						tcDesc=MyOrders.order[cntx].tconf[acnt].description;
 					}
 					if(MyOrders.order[cntx].tconf[acnt].final==""){
-						tcFinal=""
+						tcFinal="";
 					}else{
-						tcFinal="Yes"
+						tcFinal="Yes";
 					}
 					sqlstatement+='INSERT INTO MyTimeConfs (orderno , opno,type, confno , description , date , time , enddate, endtime, duration, empid, final,datestamp, user, state ) VALUES ('+
 						'"'+MyOrders.order[cntx].orderno+  '","'+   MyOrders.order[cntx].tconf[acnt].activity+  '","'+   tcType+  '","'+   MyOrders.order[cntx].tconf[acnt].confno+  '","'+  tcDesc+  '","'+  MyOrders.order[cntx].tconf[acnt].date+  '","'+  MyOrders.order[cntx].tconf[acnt].time+  '",'+ 
-						'"'+MyOrders.order[cntx].tconf[acnt].enddate+  '","'+  MyOrders.order[cntx].tconf[acnt].endtime+  '","'+  MyOrders.order[cntx].tconf[acnt].duration+  '","'+  MyOrders.order[cntx].tconf[acnt].empid+  '","'+  tcFinal+  '","","","");'
+						'"'+MyOrders.order[cntx].tconf[acnt].enddate+  '","'+  MyOrders.order[cntx].tconf[acnt].endtime+  '","'+  MyOrders.order[cntx].tconf[acnt].duration+  '","'+  MyOrders.order[cntx].tconf[acnt].empid+  '","'+  tcFinal+  '","","","");';
 	
 
 					}
@@ -1554,7 +1690,7 @@ opMessage("Callback objects triggured");
 				localStorage.setItem('LastSyncTransactionalDetails',localStorage.getItem('LastSyncTransactionalDetails')+'Objects:'+String(Objects.object.length));
 			}
 			opMessage("Deleting Existing Ref Assets");
-			sqlstatement = 	'DELETE FROM Assets;'
+			sqlstatement = 	'DELETE FROM Assets;';
 			html5sql.process(sqlstatement,
 						 function(){
 							 //alert("Success Creating Tables");
@@ -1570,7 +1706,7 @@ opMessage("Callback objects triggured");
 				
 				sqlstatement+='INSERT INTO Assets ( id, type , eqart, eqtyp, shorttext, address, workcenter ) VALUES ('+ 
 						'"'+Objects.object[cntx].id+  '","'+  Objects.object[cntx].type+  '","'+  Objects.object[cntx].eqart+  '","'+ 
-						    Objects.object[cntx].eqtyp+  '","'+ Objects.object[cntx].shorttext+  '","'+ Objects.object[cntx].address+  '","'+ Objects.object[cntx].swerk+'");'
+						    Objects.object[cntx].eqtyp+  '","'+ Objects.object[cntx].shorttext+  '","'+ Objects.object[cntx].address+  '","'+ Objects.object[cntx].swerk+'");';
 					
 				}
 				
@@ -1605,7 +1741,7 @@ opMessage("Callback Notifications triggured");
 							'DELETE FROM MyItems;'+
 							'DELETE FROM MyCauses;'+
 							'DELETE FROM MyActivities;'+
-							'DELETE FROM MyEffects;'
+							'DELETE FROM MyEffects;';
 
 			html5sql.process(sqlstatement,
 						 function(){
@@ -1641,7 +1777,7 @@ opMessage("Callback Notifications triggured");
 					'"'+MyNotifications.notification[cntx].pgroup +'",'+
 					'"'+MyNotifications.notification[cntx].pcode+'",'+
 					'"'+MyNotifications.notification[cntx].pgrouptext+'",'+ 
-					'"'+MyNotifications.notification[cntx].pcodetext+'");'
+					'"'+MyNotifications.notification[cntx].pcodetext+'");';
 					//Loop and write Items to DB
 	
 
@@ -1666,7 +1802,7 @@ opMessage("Callback Notifications triggured");
 							 '"'+MyNotifications.notification[cntx].task[tcnt].sla_end_time +'",'+
 							 '"'+MyNotifications.notification[cntx].task[tcnt].longtext +'",'+
 							 '"'+MyNotifications.notification[cntx].task[tcnt].complete +'",'+
-							 '"'+MyNotifications.notification[cntx].task[tcnt].status +'");'
+							 '"'+MyNotifications.notification[cntx].task[tcnt].status +'");';
 				
 						}
 						
@@ -1683,7 +1819,7 @@ opMessage("Callback Notifications triggured");
 							 '"'+MyNotifications.notification[cntx].effect[ecnt].effect_code+'",'+
 							 '"'+MyNotifications.notification[cntx].effect[ecnt].txt_effectgrp+'",'+
 							 '"'+MyNotifications.notification[cntx].effect[ecnt].txt_effectcd+'",'+
-							 '"'+MyNotifications.notification[cntx].effect[ecnt].value+'");'
+							 '"'+MyNotifications.notification[cntx].effect[ecnt].value+'");';
 						}
 	
 					opMessage("Loading "+MyNotifications.notification[cntx].item.length+" Items");
@@ -1704,7 +1840,7 @@ opMessage("Callback Notifications triggured");
 							 '"'+MyNotifications.notification[cntx].item[icnt].stxt_grpcd+'",'+
 							 '"'+MyNotifications.notification[cntx].item[icnt].txt_prodcd+'",'+
 							 '"'+MyNotifications.notification[cntx].item[icnt].txt_grpcd+'",'+
-							 '"'+MyNotifications.notification[cntx].item[icnt].txt_objptcd+  '","S","");'
+							 '"'+MyNotifications.notification[cntx].item[icnt].txt_objptcd+  '","S","");';
 
 						}
 					//Loop and write Causes to DB
@@ -1722,7 +1858,7 @@ opMessage("Callback Notifications triggured");
 							  '"'+MyNotifications.notification[cntx].cause[ccnt].cause_codegrp+'",'+ 
 							  '"'+MyNotifications.notification[cntx].cause[ccnt].cause_code+'",'+
 							  '"'+MyNotifications.notification[cntx].cause[ccnt].cause_txt_causegrp+'",'+
-							  '"'+MyNotifications.notification[cntx].cause[ccnt].cause_txt_causecd+  '","S","");'
+							  '"'+MyNotifications.notification[cntx].cause[ccnt].cause_txt_causecd+  '","S","");';
 						}
 					//Loop and write Items to DB
 					
@@ -1743,7 +1879,7 @@ opMessage("Callback Notifications triggured");
 							  '"'+MyNotifications.notification[cntx].activity[acnt].start_date+'",'+
 							  '"'+MyNotifications.notification[cntx].activity[acnt].start_time+'",'+ 
 							  '"'+MyNotifications.notification[cntx].activity[acnt].end_date+'",'+
-							  '"'+MyNotifications.notification[cntx].activity[acnt].end_time+  '","S","","");'
+							  '"'+MyNotifications.notification[cntx].activity[acnt].end_time+  '","S","","");';
 						}
 						
 						
@@ -1834,11 +1970,15 @@ opMessage("Callback sapCB triggured");
 				opMessage("-->NotifNo= "+MySAP.message[0].notifno);
 
 	
-					sqlstatement+="UPDATE MyNewJobs SET state = '"+ MySAP.message[0].recno+"' WHERE id='"+ MySAP.message[0].notifno+"';"
+					sqlstatement+="UPDATE MyNewJobs SET state = '"+ MySAP.message[0].recno+"' WHERE id='"+ MySAP.message[0].notifno+"';";
 					
 
 		
 			}
+//Handle Vehicle Defect Response
+			if (MySAP.message[0].type=="fileupload"){
+//alert("File Uploaded response");
+			}		
 //Handle Vehicle Defect Response
 			if (MySAP.message[0].type=="createvehicledefect"){
 				opMessage("-->Message= "+MySAP.message[0].message);
@@ -1848,7 +1988,7 @@ opMessage("Callback sapCB triggured");
 					
 					
 		
-						sqlstatement+="delete from MyNewJobs WHERE id='"+MySAP.message[0].recno+"';"
+						sqlstatement+="delete from MyNewJobs WHERE id='"+MySAP.message[0].recno+"';";
 						
 					}
 		
@@ -1862,7 +2002,7 @@ opMessage("Callback sapCB triggured");
 
 					
 		
-						sqlstatement+="UPDATE MyTimeConfs SET confno = 'SERVER' WHERE id='"+MySAP.message[0].recno+"';"
+						sqlstatement+="UPDATE MyTimeConfs SET confno = 'SERVER' WHERE id='"+MySAP.message[0].recno+"';";
 						
 
 					}
@@ -1878,20 +2018,20 @@ opMessage("Callback sapCB triggured");
 				if(MySAP.message[0].message=="Status successfully changed"){
 
 						
-						sqlstatement+="delete from MyStatus WHERE id='"+MySAP.message[0].recno + "';"
+						sqlstatement+="delete from MyStatus WHERE id='"+MySAP.message[0].recno + "';";
 			
 					}
 		
 			}	
 //Handle Create Notification Response
 			if (MySAP.message[0].type=="createnotification"){
-				alert("-->Create Notification"+MySAP.message[0].notifno+":"+MySAP.message[0].message+":"+MySAP.message[0].recno+":"+MySAP.message[0].sapmessage);
+				//alert("-->Create Notification"+MySAP.message[0].notifno+":"+MySAP.message[0].message+":"+MySAP.message[0].recno+":"+MySAP.message[0].sapmessage);
 				opMessage("-->Create Notification");
 				opMessage("-->NotifNo= "+MySAP.message[0].notifno);
 				opMessage("-->Message= "+MySAP.message[0].message);
 				if(MySAP.message[0].message=="Success"){
 
-						sqlstatement+="UPDATE MyNotifications SET notifno = '"+MySAP.message[0].notifno+"' WHERE id='"+MySAP.message[0].recno+"';"
+						sqlstatement+="UPDATE MyNotifications SET notifno = '"+MySAP.message[0].notifno+"' WHERE id='"+MySAP.message[0].recno+"';";
 			
 
 			
@@ -1907,7 +2047,7 @@ opMessage("Callback sapCB triggured");
 
 			
 		
-						sqlstatement+="UPDATE MyMessages SET state = '1' WHERE id='"+MySAP.message[0].id + "';"
+						sqlstatement+="UPDATE MyMessages SET state = '1' WHERE id='"+MySAP.message[0].id + "';";
 						
 						
 			
@@ -1922,7 +2062,7 @@ opMessage("Callback sapCB triggured");
 
 			
 		
-						sqlstatement+="UPDATE MyMessages SET state = 'SENT' WHERE id="+MySAP.message[0].id + ";"
+						sqlstatement+="UPDATE MyMessages SET state = 'SENT' WHERE id="+MySAP.message[0].id + ";";
 						
 						
 			
@@ -2006,24 +2146,24 @@ function refflocsCB(Funcloc){
 		{	
 		fllevel=((Funcloc.funcloc[cntx].id).match(/-/g) || []).length;
 		if(fllevel=="0"){
-			parentid=""
+			parentid="";
 			}else{		
-			parentid=(Funcloc.funcloc[cntx].id).substring(0,(Funcloc.funcloc[cntx].id).lastIndexOf("-"))
+			parentid=(Funcloc.funcloc[cntx].id).substring(0,(Funcloc.funcloc[cntx].id).lastIndexOf("-"));
 			}
 		childcnt=cntx+1;
 		if(childcnt<Funcloc.funcloc.length)
 			{
 			fllevelchild=((Funcloc.funcloc[childcnt].id).match(/-/g) || []).length;
 			if(fllevelchild=="0"){
-				parentidchild=""
+				parentidchild="";
 				}else{		
-				parentidchild=(Funcloc.funcloc[childcnt].id).substring(0,(Funcloc.funcloc[childcnt].id).lastIndexOf("-"))
+				parentidchild=(Funcloc.funcloc[childcnt].id).substring(0,(Funcloc.funcloc[childcnt].id).lastIndexOf("-"));
 				}
 			if(parentidchild==Funcloc.funcloc[cntx].id)
 				{
-				children=1
+				children=1;
 				}else{
-				children=0
+				children=0;
 				}
 			}else{
 				Children=0;
@@ -2042,7 +2182,7 @@ function refflocsCB(Funcloc){
 		}
 		html5sql.process(sqlstatement,
 			 function(){
-			opMessage("Flocs inserted and now we do the Parent ID bit")
+			opMessage("Flocs inserted and now we do the Parent ID bit");
 			
 					},
 					
@@ -2064,7 +2204,7 @@ function refgasCB(Survey){
 
 
 		var sqlstatement="";
-		var sqlstatement1="";
+		
 		opMessage("Loading "+Survey.QUESTION.length+" Reference Gas Survey Questions");
 		for(var cntx=0; cntx < Survey.QUESTION.length ; cntx++)
 			{	
@@ -2085,7 +2225,7 @@ function refgasCB(Survey){
 						 '"Q",'+ 
 						 '"'+ Survey.QUESTION[cntx].KEY+'",'+ 
 						 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].KEY+'",'+  
-						 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].VALUE+'");' 
+						 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].VALUE+'");' ;
 					}
 				}//End of LB Build
 				else
@@ -2094,7 +2234,7 @@ function refgasCB(Survey){
 					 '"Q",'+ 
 					 '"'+ Survey.QUESTION[cntx].KEY+'",'+ 
 					 '" ",'+  
-					 '" ");' 	
+					 '" ");' ;	
 				}
 			if (Survey.QUESTION[cntx].TYPE=="LDB")
 				{
@@ -2107,7 +2247,7 @@ function refgasCB(Survey){
 						{
 						sqlstatement+='INSERT INTO GASSurveyMake (make , description) VALUES ('+ 
 							 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].KEY+'",'+  
-							 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].VALUE+'");' 
+							 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].VALUE+'");' ;
 						}
 					if (Survey.QUESTION[cntx].LABEL=="Model") 
 						{
@@ -2115,7 +2255,7 @@ function refgasCB(Survey){
 						sqlstatement+='INSERT INTO GASSurveyModel (make , model, description) VALUES ('+ 
 							 '"'+res[0]+'",'+  
 							 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].KEY+'",'+ 
-							 '"'+res[1]+'");' 
+							 '"'+res[1]+'");' ;
 						}
 					if (Survey.QUESTION[cntx].LABEL=="Model") {
 						if (opscnt>600) {
@@ -2129,7 +2269,7 @@ function refgasCB(Survey){
 			//alert(sqlstatement)
  			html5sql.process(sqlstatement,
 				 function(){
-					opMessage("Flocs inserted and now we do the Parent ID bit")
+					opMessage("Flocs inserted and now we do the Parent ID bit");
 						//alert("good")
 						},
 						
@@ -2165,7 +2305,7 @@ function refgashdrCB(Survey){
 					 '"H",'+ 
 					 '"'+ Survey.QUESTION[cntx].KEY+'",'+ 
 					 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].KEY+'",'+  
-					 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].VALUE+'");' 
+					 '"'+ Survey.QUESTION[cntx].ANSWER[opscnt].VALUE+'");' ;
 				}
 			}//End of LB Build
 			else
@@ -2174,13 +2314,13 @@ function refgashdrCB(Survey){
 				 '"H",'+ 
 				 '"'+ Survey.QUESTION[cntx].KEY+'",'+ 
 				 '" ",'+  
-				 '" ");' 	
+				 '" ");' 	;
 			}
 		}
 //alert(sqlstatement)
  		html5sql.process(sqlstatement,
 			 function(){
-			opMessage("Flocs inserted and now we do the Parent ID bit")
+			opMessage("Flocs inserted and now we do the Parent ID bit");
 			
 					},
 					
@@ -2214,7 +2354,7 @@ function getEquips(){
 				'"'+ Equipment.equipment[cntx].name +'",'+ 
 				'"'+ Equipment.equipment[cntx].city +'",'+ 
 				'"'+ Equipment.equipment[cntx].street +'",'+ 
-				'"'+ Equipment.equipment[cntx].postcode+'");' 
+				'"'+ Equipment.equipment[cntx].postcode+'");' ;
 				//Loop and write Tasks to DB
 
 				opMessage("Loading "+Equipment.equipment[cntx].classval.length+" Class Vals");
@@ -2228,7 +2368,7 @@ function getEquips(){
 						 '"'+ Equipment.equipment[cntx].classval[opscnt].valuechar+'",'+ 
 						 '"'+ Equipment.equipment[cntx].classval[opscnt].valueto+'",'+ 
 						 '"'+ Equipment.equipment[cntx].classval[opscnt].valueneutral+'",'+  
-						 '"'+ Equipment.equipment[cntx].classval[opscnt].description+'");' 
+						 '"'+ Equipment.equipment[cntx].classval[opscnt].description+'");' ;
 				
 					}
 				
@@ -2280,7 +2420,7 @@ var sqlstatement="";
 					'"'+MyUsers.user[cntx].equipment +'",'+  
 					'"'+MyUsers.user[cntx].firstname +'",'+  
 					'"'+MyUsers.user[cntx].lastname+'",'+  
-					'"'+MyUsers.user[cntx].telno+'");'
+					'"'+MyUsers.user[cntx].telno+'");';
 					
 					
 
@@ -2309,7 +2449,7 @@ var sqlstatement="";
 				localStorage.setItem('LastSyncReferenceDetails',localStorage.getItem('LastSyncReferenceDetails')+'Vehicles:'+String(MyVehicles.vehicle.length));
 			}
 			opMessage("Deleting Existing Vehicles");
-			sqlstatement+='DELETE FROM MyVehicles;'
+			sqlstatement+='DELETE FROM MyVehicles;';
 			opMessage("Loading"+MyVehicles.vehicle.length+" Vehicles");
 			for(var cntx=0; cntx < MyVehicles.vehicle.length ; cntx++)
 				{	
@@ -2318,7 +2458,7 @@ var sqlstatement="";
 					'"'+MyVehicles.vehicle[cntx].vehicle +'",'+ 
 					'"'+MyVehicles.vehicle[cntx].reg +'",'+ 
 					'"'+MyVehicles.vehicle[cntx].description+'",'+ 
-					'"'+MyVehicles.vehicle[cntx].mpoint+'");'
+					'"'+MyVehicles.vehicle[cntx].mpoint+'");';
 					
 					
 
@@ -2337,7 +2477,7 @@ var sqlstatement="";
 }
 function messageCB(MyMessages){
 var sqlstatement="";
-var sqlstatement1="";		
+
 
 	if(MyMessages.messages.length>0){
 			if(syncTransactionalDetsUpdated){
@@ -2347,7 +2487,7 @@ var sqlstatement1="";
 			}
 
 			opMessage("Deleting Existing Messages");
-			sqlstatement+='DELETE FROM MyMessages where msgfromid <> "SENTMSG";'
+			sqlstatement+='DELETE FROM MyMessages where msgfromid <> "SENTMSG";';
 			opMessage("Loading"+MyMessages.messages.length+" Messages");
             //alert("Loading"+MyMessages.messages.length+" Messages");
 			for(var cntx=0; cntx < MyMessages.messages.length ; cntx++)
@@ -2365,7 +2505,7 @@ var sqlstatement1="";
 					'"'+MyMessages.messages[cntx].description +'",'+ 
 					'"'+MyMessages.messages[cntx].body+'",'+  
 					'"'+MyMessages.messages[cntx].expirydate+'",'+
-					'"'+MyMessages.messages[cntx].read+'");'  
+					'"'+MyMessages.messages[cntx].read+'");'  ;
 
 				}
 					
@@ -2389,7 +2529,7 @@ var sqlstatement="";
 
 
 			opMessage("Deleting Existing TS NP Jobs");
-			sqlstatement+='DELETE FROM TSNPJobs;'
+			sqlstatement+='DELETE FROM TSNPJobs;';
 			opMessage("Loading"+jobs.NPJOBSRECORD.length+" TS NPJobs");
 			for(var cntx=0; cntx < jobs.NPJOBSRECORD.length ; cntx++)
 				{	
@@ -2397,7 +2537,7 @@ var sqlstatement="";
 				sqlstatement+='INSERT INTO TSNPJobs (jobno , subtype , description ) VALUES ('+ 
 					'"'+jobs.NPJOBSRECORD[cntx].JOBNO +'",'+  
 					'"'+jobs.NPJOBSRECORD[cntx].SUBTYPE+'",'+  
-					'"'+jobs.NPJOBSRECORD[cntx].DESC+'");' 
+					'"'+jobs.NPJOBSRECORD[cntx].DESC+'");' ;
 					
 					
 
@@ -2421,7 +2561,7 @@ var sqlstatement="";
 
 
 			opMessage("Deleting Existing TS Activities");
-			sqlstatement+='DELETE FROM TSActivities;'
+			sqlstatement+='DELETE FROM TSActivities;';
 			opMessage("Loading"+activities.ACTIVITYRECORD.length+" TS Activities");
 			for(var cntx=0; cntx < activities.ACTIVITYRECORD.length ; cntx++)
 				{	
@@ -2430,7 +2570,7 @@ var sqlstatement="";
 					'"'+activities.ACTIVITYRECORD[cntx].CODE +'",'+  
 					'"'+activities.ACTIVITYRECORD[cntx].SKILL+'",'+ 
 					'"'+activities.ACTIVITYRECORD[cntx].SUBSKILL+'",'+  					
-					'"'+activities.ACTIVITYRECORD[cntx].DESC+'");' 
+					'"'+activities.ACTIVITYRECORD[cntx].DESC+'");' ;
 					
 					
 
@@ -2460,10 +2600,10 @@ var sqlstatement="";
 				localStorage.setItem('LastSyncTransactionalDetails',localStorage.getItem('LastSyncTransactionalDetails')+'Order Objects:'+String(MyObjects.orderobjects.length));
 			}
 			opMessage("Deleting Existing Assets");
-			sqlstatement+='DELETE FROM Assets;'
-			sqlstatement+='DELETE FROM AssetClassVals;'
-			sqlstatement+='DELETE FROM AssetMeasurementPoints;'
-			sqlstatement+='DELETE FROM AssetInstalledEquip;'
+			sqlstatement+='DELETE FROM Assets;';
+			sqlstatement+='DELETE FROM AssetClassVals;';
+			sqlstatement+='DELETE FROM AssetMeasurementPoints;';
+			sqlstatement+='DELETE FROM AssetInstalledEquip;';
 			opMessage("Loading "+MyObjects.orderobjects.length+" Assets");
 			for(var cntx=0; cntx <   MyObjects.orderobjects.length ; cntx++){
 				objtype=MyObjects.orderobjects[cntx].objtype;
@@ -2472,7 +2612,7 @@ var sqlstatement="";
 				objaddress=MyObjects.orderobjects[cntx].address;
 				objswerk=MyObjects.orderobjects[cntx].swerk;
 
-				sqlstatement+='INSERT INTO Assets (type , id , shorttext , address, workcenter ) VALUES ("'+objtype+'","'+  objid+'","'+ objshorttext+'","'+ objaddress+'","'+ objswerk+'");'
+				sqlstatement+='INSERT INTO Assets (type , id , shorttext , address, workcenter ) VALUES ("'+objtype+'","'+  objid+'","'+ objshorttext+'","'+ objaddress+'","'+ objswerk+'");';
 				//Loop and write Classvals to DB
 
 				// opMessage("Loading "+MyObjects.orderobjects[cntx].classval.length+" Class Vals");
@@ -2547,10 +2687,10 @@ opMessage("Callback Reference Data triggured");
 				localStorage.setItem('LastSyncReferenceDetails',localStorage.getItem('LastSyncReferenceDetails')+'Scenarios:'+String(MyReference.scenario.length));
 			}
 			opMessage("Deleting Existing Reference Data");
-			sqlstatement+='DELETE FROM MyRefOrderTypes;'
-			sqlstatement+='DELETE FROM MyRefNotifTypes;'
-			sqlstatement+='DELETE FROM MyRefPriorityTypes;'
-			sqlstatement+='DELETE FROM MyRefUserStatusProfiles;'
+			sqlstatement+='DELETE FROM MyRefOrderTypes;';
+			sqlstatement+='DELETE FROM MyRefNotifTypes;';
+			sqlstatement+='DELETE FROM MyRefPriorityTypes;';
+			sqlstatement+='DELETE FROM MyRefUserStatusProfiles;';
 			for(var cntx=0; cntx < MyReference.scenario.length ; cntx++)
 				{	
 				opMessage("Loading Scenario "+MyReference.scenario[cntx].scenario + " Reference Data");
@@ -2567,7 +2707,7 @@ opMessage("Callback Reference Data triggured");
 							 '"'+MyReference.scenario[cntx].ordertype[opscnt].description+'",'+
 							 '"'+MyReference.scenario[cntx].ordertype[opscnt].statusprofile+'",'+
 							 '"'+MyReference.scenario[cntx].ordertype[opscnt].opstatusprofile+'",'+
-							 '"'+MyReference.scenario[cntx].ordertype[opscnt].priorityprofile+'");'
+							 '"'+MyReference.scenario[cntx].ordertype[opscnt].priorityprofile+'");';
 						}
 						//Loop and write notiftypes to DB
 
@@ -2582,7 +2722,7 @@ opMessage("Callback Reference Data triggured");
 								 '"'+MyReference.scenario[cntx].notiftype[opscnt].description+'",'+
 								 '"'+MyReference.scenario[cntx].notiftype[opscnt].statusprofile+'",'+
 								 '"'+MyReference.scenario[cntx].notiftype[opscnt].taskstatusprofile+'",'+
-								 '"'+MyReference.scenario[cntx].notiftype[opscnt].priority_type+'");'
+								 '"'+MyReference.scenario[cntx].notiftype[opscnt].priority_type+'");';
 						}
 							
 
@@ -2596,7 +2736,7 @@ opMessage("Callback Reference Data triggured");
 								 '"'+MyReference.scenario[cntx].scenario+'",'+
 								 '"'+MyReference.scenario[cntx].prioritytype[opscnt].type+'",'+
 								 '"'+MyReference.scenario[cntx].prioritytype[opscnt].priority+'",'+
-								 '"'+MyReference.scenario[cntx].prioritytype[opscnt].description+'");'
+								 '"'+MyReference.scenario[cntx].prioritytype[opscnt].description+'");';
 							
 							}
 						//Loop and write prioritytypes to DB
@@ -2609,7 +2749,7 @@ opMessage("Callback Reference Data triggured");
 									 '"'+MyReference.scenario[cntx].userstatus[opscnt].type+'",'+
 									 '"'+MyReference.scenario[cntx].userstatus[opscnt].status+'",'+
 									 '"'+MyReference.scenario[cntx].userstatus[opscnt].statuscode+'",'+
-									 '"'+MyReference.scenario[cntx].userstatus[opscnt].statusdesc +'");'
+									 '"'+MyReference.scenario[cntx].userstatus[opscnt].statusdesc +'");';
 							
 							}			
 
@@ -2632,10 +2772,10 @@ opMessage("Callback Reference Data triggured");
 }
 function refdatacodesCB(MyReference){
 var sqlstatement="";
-var sqlstatement1=""
-var DBWrite=false;
+
+
 opMessage("Callback Reference Data Codes triggured");
-var cntx=0;
+
 	if(MyReference.catprofile.length>0){
 			if(syncReferenceDetsUpdated){
 				localStorage.setItem('LastSyncReferenceDetails',localStorage.getItem('LastSyncReferenceDetails')+', CatProfiles:'+String(MyReference.catprofile.length));
@@ -2643,22 +2783,23 @@ var cntx=0;
 				localStorage.setItem('LastSyncReferenceDetails',localStorage.getItem('LastSyncReferenceDetails')+'CatProfiles:'+String(MyReference.catprofile.length));
 			}
 			opMessage("Deleting Existing Reference Data");
-			sqlstatement+='DELETE FROM RefNotifprofile;'
-			sqlstatement+='DELETE FROM RefCodeGroups;'
-			sqlstatement+='DELETE FROM RefCodes;'
-			sqlstatement1=""
+			sqlstatement+='DELETE FROM RefNotifprofile;';
+			sqlstatement+='DELETE FROM RefCodeGroups;';
+			sqlstatement+='DELETE FROM RefCodes;';
+			sqlstatement1="";
+			//alert(MyReference.catprofile.length)
 			html5sql.process(sqlstatement,
 				 function(){
 					
-						sqlstatement=''
-						rcgcnt=0
+						sqlstatement='';
+						rcgcnt=0;
 						for(var cntx=0; cntx < MyReference.catprofile.length ; cntx++)
 							{	
 							
-							sqlstatement='INSERT INTO RefNotifprofile (scenario, profile , notif_type ) VALUES ('+
+							sqlstatement+='INSERT INTO RefNotifprofile (scenario, profile , notif_type ) VALUES ('+
 									 '"'+MyReference.catprofile[cntx].scenario+'",'+
 									 '"'+MyReference.catprofile[cntx].notifcat_profile+'",'+
-									 '"'+MyReference.catprofile[cntx].notifcat_type+'");'
+									 '"'+MyReference.catprofile[cntx].notifcat_type+'");';
 								
 								
 
@@ -2673,7 +2814,7 @@ var cntx=0;
 										 '"'+MyReference.catprofile[cntx].codegroup[opscnt].catalog_type+'",'+
 										 '"'+MyReference.catprofile[cntx].codegroup[opscnt].code_cat_group+'",'+
 										 '"'+MyReference.catprofile[cntx].codegroup[opscnt].codegroup+'",'+
-										 '"'+MyReference.catprofile[cntx].codegroup[opscnt].codegroup_text+'");'
+										 '"'+MyReference.catprofile[cntx].codegroup[opscnt].codegroup_text+'");';
 									
 									
 									//Loop and write codes to DB
@@ -2689,7 +2830,7 @@ var cntx=0;
 											 '"'+MyReference.catprofile[cntx].notifcat_profile+'",'+
 											 '"'+MyReference.catprofile[cntx].codegroup[opscnt].code_cat_group+'",'+
 											 '"'+MyReference.catprofile[cntx].codegroup[opscnt].codes[ccnt].code+'",'+
-											 '"'+x+'");'
+											 '"'+x+'");';
 										}
 								
 									}
@@ -2704,7 +2845,7 @@ var cntx=0;
 					 //alert("Error: " + error.message + " when processing " + statement);
 				 }        
 			);		
-					rcgcnt=0
+					rcgcnt=0;
 				 },
 				 function(error, statement){
 					 opMessage("Error: " + error.message + " when processing " + statement);
@@ -2721,37 +2862,37 @@ var sqlstatement="";
 
 //Survey Creaate Data
 
-sqlstatement+="INSERT INTO Surveys (name, type, datecreated, description) VALUES ('Survey2', 'SurveyExtra', '20140804 130443', 'Survey2 Description');"
+sqlstatement+="INSERT INTO Surveys (name, type, datecreated, description) VALUES ('Survey2', 'SurveyExtra', '20140804 130443', 'Survey2 Description');";
 //SurveyDetail Creaate Data
 
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '-2', '', '1', 'Group1', 'Is This a Secure Location?', 'Yes', '2', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '1', '', '2', 'What is the Condition of the Gate?', 'What is the Condition of the Gate?', '', '3', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ('1', '1', '', '1', 'What is The Fence Made of?', 'What is The Fence Made of?', '', '4', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '1', '', '4', 'How Many Gates are there?', 'How Many Gates are there?', '', '5', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ('1', '-1', '', '2', 'Is there a Car Park?', 'Is there a Car Park?', '', '6', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '-2', '', '10', 'Office', 'Is There a Office?', 'No', '7', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '2', 'Type of Building?', 'Type of Building?', '', '8', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '4', 'How many People Work here?', '', '', '9', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '2', 'is there Internet Access?', '', '', '10', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '6', 'What Type of Generator is on Site?', 'What Type of Generator is on Site?', '', '11', '', '', '', '');"
-sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '-1', '', '5', 'Any Other Comments?', 'Any Other Comments?', '', '-1', '', '', '', '');"
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '-2', '', '1', 'Group1', 'Is This a Secure Location?', 'Yes', '2', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '1', '', '2', 'What is the Condition of the Gate?', 'What is the Condition of the Gate?', '', '3', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ('1', '1', '', '1', 'What is The Fence Made of?', 'What is The Fence Made of?', '', '4', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '1', '', '4', 'How Many Gates are there?', 'How Many Gates are there?', '', '5', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ('1', '-1', '', '2', 'Is there a Car Park?', 'Is there a Car Park?', '', '6', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '-2', '', '10', 'Office', 'Is There a Office?', 'No', '7', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '2', 'Type of Building?', 'Type of Building?', '', '8', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '4', 'How many People Work here?', '', '', '9', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '2', 'is there Internet Access?', '', '', '10', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '6', '', '6', 'What Type of Generator is on Site?', 'What Type of Generator is on Site?', '', '11', '', '', '', '');";
+sqlstatement+="INSERT INTO SurveysDetail (surveyid, groupcode, sortseq, type, name, description, defaultval, next, attribute1, attribute2, attribute3, attribute4) VALUES ( '1', '-1', '', '5', 'Any Other Comments?', 'Any Other Comments?', '', '-1', '', '', '', '');";
 //SurveyDetailAnswers Creaate Data
 
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '7', '2', '', '1', 'Needs replacing', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '2', '', '2', 'Needs maintenance', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '2', '', '3', 'No Problem', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '3', '', '1', 'Wood', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '3', '', '2', 'Metal', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '5', '', 'Yes', 'Yes', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '5', '', 'No', 'No', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '7', '', 'Brick', 'Brick Built', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '7', '', 'Wood', 'Wood Built', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '9', '', 'Yes', 'Yes', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '9', '', 'No', 'No', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'KV100', 'KV100', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'MP333', 'MP333', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'AB123', 'AB123', '');"
-sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'VV777', 'VV777', '');"
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '7', '2', '', '1', 'Needs replacing', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '2', '', '2', 'Needs maintenance', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '2', '', '3', 'No Problem', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '3', '', '1', 'Wood', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '3', '', '2', 'Metal', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '5', '', 'Yes', 'Yes', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '5', '', 'No', 'No', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '7', '', 'Brick', 'Brick Built', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '7', '', 'Wood', 'Wood Built', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '9', '', 'Yes', 'Yes', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '9', '', 'No', 'No', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'KV100', 'KV100', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'MP333', 'MP333', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'AB123', 'AB123', '');";
+sqlstatement+="INSERT INTO SurveysDetailAnswers ( surveyid, detailid, answertype, answercode, description, defaultval) VALUES ( '1', '10', '', 'VV777', 'VV777', '');";
 			html5sql.process(sqlstatement,
 				 function(){
 					 //alert("Success - Finished Loading Survey Data");

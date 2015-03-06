@@ -175,7 +175,10 @@ border-radius: 15px;
 							<TD width ="10%">Job Type:&nbsp;<td width = "30%"><b id="OrderType"></b></td>
 						</TR>
 						<TR>
-							<TD width ="15%">Notification No:&nbsp;<td width = "45%"><b id="NotifNo"></b></td>
+							<TD width ="15%">Notification No:&nbsp;&nbsp;<a href="javascript:gotoNotification()" ><i class="fa fa-lg fa-binoculars  pull-right fa-border"></i></a></TD>
+							<td width = "45%"><b id="NotifNo"></b>
+							
+							</td>
 							<TD width ="10%">Job Priority:&nbsp;<td width = "30%"><b id="OperationPriority"></b></td>
 						</TR>
 
@@ -393,7 +396,11 @@ function gotoOrders()
 loc="JobsOrders.htm"
 window.location.href=loc;
 } 
-
+function gotoNotification()
+{
+loc="JobsNotificationDetails.htm?JobNo="+JobNo+"&Status="+Status+"&NotifNo="+NotifNo+"&Callback=Order"
+window.location.href=loc;
+} 
 function gotoTasks()
 {
 loc="JobsOrdersDetailsTasks.htm?JobNo="+JobNo+"&Status="+Status+"&NotifNo="+NotifNo //CurrentNotifType
@@ -432,6 +439,7 @@ function AcceptedPressed(){
 
 }
 function OnRoutePressed(){
+	sendSMS('011447540293818','Engineer on Route')
 updateOperationStatus(CurrentOrderNo, CurrentOpNo, "JONR", "On-Route")
 	$('#ButtonAccepted').addClass('ui-disabled');
 	$('#ButtonOnRoute').addClass('ui-disabled');

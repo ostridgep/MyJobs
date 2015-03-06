@@ -87,10 +87,10 @@ border-radius: 15px;
 		</div>
 		<div  align="center"> 
 			<div id="DisplayLog" align="center" class="MyWorkTiles MyWorkTilesHighlight"><H2 >Display Log<BR><img src="images/settings/displaylog.gif"  height="75" width="75"></H2></div>
-			<a href="#popupCreateDB"  data-rel="popup" data-position-to="window" data-transition="pop" style="color:black; text-decoration:none;" >			
+			<a href="#popupDBReset"  data-rel="popup" data-position-to="window" data-transition="pop" style="color:black; text-decoration:none;" >			
 			<div id="DBSetup" align="center" class="MyWorkTiles MyWorkTilesHighlight">
 						
-			<H2>DB Setup<BR><img src="images/settings/createdatabase.gif"   height="75" width="75"></H2>
+			<H2>DB Reset<BR><img src="images/settings/resetdatabase.png"   height="75" width="75"></H2>
 				
 			</div></a>
 
@@ -104,20 +104,22 @@ border-radius: 15px;
 		</div>
 	
 
-<div data-role="popup" id="popupCreateDB"  data-dismissible="false" style="max-width:400px;">
-	<div data-role="header" data-theme="a">
-	<h1>Initialize Database?</h1>
-	</div>
-	<div role="main" class="ui-content">
-		<h4 class="ui-title">This will Initialize the DB with Demo Data</h4>
-		<p style="color:red">This action cannot be undone.</p>
-		<div id="createButtons">
-			<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a ui-icon-delete  ui-btn-icon-left" data-rel="back">Cancel</a>
-			<a href="#" onclick="createTheDatabase();" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-a  ui-icon-check  ui-btn-icon-left" data-rel="back" data-transition="flow">Initialize Database</a>
-		</div>
-	</div>
-
-</div>
+		    <div data-role="popup" id="popupDBReset">
+		      <div data-role="header">
+		       Reset Database
+		      </div>
+		
+		      <div data-role="main" class="ui-content">
+		        <h2 align = "center">Are you sure?</h2>
+		
+		 	  </div>
+		
+		      <div data-role="footer">
+		      <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline  ui-icon-delete ui-btn-icon-left" data-rel="back">Cancel</a>
+		      <a href="#" onclick="resetTables()" class="ui-btn ui-corner-all ui-shadow ui-btn-inline  ui-icon-check ui-btn-icon-left" data-rel="back">Proceed</a>
+		     
+		      </div>
+		    </div>
 		
 	</div>
 	

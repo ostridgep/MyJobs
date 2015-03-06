@@ -315,22 +315,28 @@ function createTask(notifno,groupcd,codecd, grouptext, codetext, description)
 function gotoActivities(){
 
 
-window.location.href='JobsNotificationDetailsActivities.htm?NotifNo='+SelectedNotifNo+'&Type='+CurrentNotifType+'&Profile='+CurrentNotifTypeProfile;
+	window.location.href='JobsNotificationDetailsActivities.htm?NotifNo='+SelectedNotifNo+'&Type='+CurrentNotifType+'&Profile='+CurrentNotifTypeProfile+'&JobNo='+SelectedJobNo+'&Status='+SelectedStatus+'&Callback='+SelectedCallback;
 }
 function BackToNotifDetails(){
 
 
-window.location.href='JobsNotificationDetails.htm?NotifNo='+SelectedNotifNo;
+	window.location.href='JobsNotificationDetails.htm?NotifNo='+SelectedNotifNo+'&JobNo='+SelectedJobNo+'&Status='+SelectedStatus+'&Callback='+SelectedCallback;
 }
   //var db = openDatabase('MyJobsDB', '1.0', 'MyJobsDB', 2000000);
   var CurrentNotifNo="";
   var NotifNoID="";
-
-		
+	 var SelectedJobNo=getURLParameters("JobNo");
+	 var SelectedStatus=getURLParameters("Status");
+	 var SelectedCallback=getURLParameters("Callback");	
 	 var SelectedNotifNo=getURLParameters("NotifNo");
-	 res=SelectedNotifNo.split("|");
-	 CurrentNotifNo=res[0];
-	 NotifNoID=res[1];
+	 if(SelectedCallback!='Order'){
+		 res=SelectedNotifNo.split("|");
+		 CurrentNotifNo=res[0];
+		 NotifNoID=res[1];		 
+	 }else{
+		 CurrentNotifNo=SelectedNotifNo;
+		 
+	 }
 
 var CurrentNotifType=getURLParameters("Type");
 if (CurrentNotifNo!="NEW"){

@@ -194,8 +194,10 @@ var popupMode=""
 			<div  class="boxeddiv" align="left" data-role="inlinetabs"  data-theme="a" data-scroll="true">
 			<ul>
 				<li data-tab="1"><img src="images/Team.png"  height="42" width="42"></li>
-				<li data-tab="2"><img src="images/email.png"  height="42" width="42"></li>
-				<li data-tab="3"><img src="images/Contacts.png"  height="42" width="42"></li>
+				<li data-tab="2"><img src="images/MailReceived.png"  height="42" width="42"></li>
+				<li data-tab="3"><img src="images/MailSent.png"  height="42" width="42"></li>
+				<li data-tab="4"><img src="images/MailAlert.png"  height="42" width="42"></li>
+				<li data-tab="5"><img src="images/Contacts.png"  height="42" width="42"></li>
 			</ul>
 						
 				<div  data-tab="1" >
@@ -203,34 +205,18 @@ var popupMode=""
 
 				</div>	
 				<div data-tab="2"  >
-					<div  class="boxeddiv" align="left" data-role="inlinetabs"  data-theme="a" data-scroll="true">
-						<ul>
-							<li data-tab="11"><img src="images/MailReceived.png"  height="42" width="42"></li>
-							<li data-tab="12"><img src="images/MailSent.png"  height="42" width="42"></li>
-							<li data-tab="13"><img src="images/MailAlert.png"  height="42" width="42"></li>
-						</ul>
-						<div data-tab="11"  >
 						<table  id="ReceivedMessages" width = "100%" cellspacing="0"  style="border-spacing: 0;" class="tablesorter1">
-
-
-							</table>
-						</DIV>
-						<div data-tab="12"  >
-						<table  id="SentMessages" width = "100%" cellspacing="0"  style="border-spacing: 0;" class="tablesorter1">
-
-
-							</table>
-						</DIV>
-						<div data-tab="13"  >
-						<table  id="SystemMessages" width = "100%" cellspacing="0"  style="border-spacing: 0;" class="tablesorter1">
-
-
 						</table>
-						</DIV>
-					</div>
-				</div>				
-
-				<div data-tab="3"    >
+				</DIV>
+				<div data-tab="3"  >
+						<table  id="SentMessages" width = "100%" cellspacing="0"  style="border-spacing: 0;" class="tablesorter1">
+						</table>
+				</DIV>
+				<div data-tab="4"  >
+						<table  id="SystemMessages" width = "100%" cellspacing="0"  style="border-spacing: 0;" class="tablesorter1">
+						</table>
+				</DIV>
+				<div data-tab="5"    >
 					
 					<table width="100%">
 						<TR>
@@ -381,7 +367,7 @@ HTMLToOutput=""
 			for (var n = 0; n < rowsArray.length; n++) {
 				item = rowsArray[n];
 
-				HTMLToOutput+= "<option value='"+item.userid+"'>"+item.firstname+" "+item.lastname+"</option>"
+				HTMLToOutput+= "<option value='"+item.userid+"'>"+item.userid+"</option>"
 				HTMLToOutput1+= "<TR><TD>"+item.firstname+" "+item.lastname+"</td><TD>"+item.telno+"</td></TR>"
 			}
 

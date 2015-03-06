@@ -276,20 +276,25 @@ function createActivity(notifno,task,groupcd,codecd, grouptext, codetext, descri
 	)
 }
 function BackToNotifDetails(){
+	window.location.href='JobsNotificationDetails.htm?NotifNo='+SelectedNotifNo+'&JobNo='+SelectedJobNo+'&Status='+SelectedStatus+'&Callback='+SelectedCallback;
 
 
-window.location.href='JobsNotificationDetails.htm?NotifNo='+CurrentNotifNo;
-}
-//var db = openDatabase('MyJobsDB', '1.0', 'MyJobsDB', 2000000);
-  var CurrentNotifNo="";
-  var NotifNoID="";
-
-		
-	 var SelectedNotifNo=getURLParameters("NotifNo");
-	 res=SelectedNotifNo.split("|");
-	 CurrentNotifNo=res[0];
-	 NotifNoID=res[1];
-
+	}
+	//var db = openDatabase('MyJobsDB', '1.0', 'MyJobsDB', 2000000);
+	  var CurrentNotifNo="";
+	  var NotifNoID="";
+		 var SelectedJobNo=getURLParameters("JobNo");
+		 var SelectedStatus=getURLParameters("Status");
+		 var SelectedCallback=getURLParameters("Callback");	
+		 var SelectedNotifNo=getURLParameters("NotifNo");
+		 if(SelectedCallback!='Order'){
+			 res=SelectedNotifNo.split("|");
+			 CurrentNotifNo=res[0];
+			 NotifNoID=res[1];		 
+		 }else{
+			 CurrentNotifNo=SelectedNotifNo;
+			 
+		 }
 if (CurrentNotifNo!="NEW"){
 	$('#Create').hide();
 	}

@@ -34,14 +34,21 @@ syncUpload()
 </script>
   <script>
   //var db = openDatabase('MyJobsDB', '1.0', 'MyJobsDB', 2000000);
-  var CurrentNotifNo="";
+ var CurrentNotifNo="";
   var NotifNoID="";
-
-		
+	 var SelectedJobNo=getURLParameters("JobNo");
+	 var SelectedStatus=getURLParameters("Status");
+	 var SelectedCallback=getURLParameters("Callback");	
 	 var SelectedNotifNo=getURLParameters("NotifNo");
-	 res=SelectedNotifNo.split("|");
-	 CurrentNotifNo=res[0];
-	 NotifNoID=res[1];
+	 if(SelectedCallback!='Order'){
+		 res=SelectedNotifNo.split("|");
+		 CurrentNotifNo=res[0];
+		 NotifNoID=res[1];		 
+	 }else{
+		 CurrentNotifNo=SelectedNotifNo;
+		 
+	 }
+
 
 //alert(SelectedNotifNo);
   var LatLongType=getURLParameters("LatLongType");
@@ -59,6 +66,18 @@ syncUpload()
 
  
 GetNotificationDetails();
+function goBack()
+{
+
+	 if(SelectedCallback=='Order'){
+		 window.location.href='JobsOrdersDetails.htm?JobNo='+SelectedJobNo+'&Status='+SelectedStatus+'&NotifNo='+SelectedNotifNo
+	 
+	 }else{
+		 window.location.href='JobsNotifications.htm'
+		 
+	 }
+	
+}
 function GetNotificationDetails(){
 var Stripe="";
 var opMap="";
@@ -70,7 +89,11 @@ var n=1;
 SQLStatement="SELECT MyNotifications.notifno, MyNotifications.reportedon, MyNotifications.reportedby, MyNotifications.type, MyNotifications.shorttext, MyNotifications.longtext, MyNotifications.funcloc, MyNotifications.equipment, MyNotifications.orderno, "
 SQLStatement+=" MyNotifications.plant, MyNotifications.priority, MyNotifications.funclocgis, MyNotifications.equipmentgis  "
 SQLStatement+=" From MyNotifications "
-SQLStatement+=" where MyNotifications.id = '"+NotifNoID+"'"
+	if(SelectedCallback!='Order'){
+		SQLStatement+=" where MyNotifications.id = '"+NotifNoID+"'"
+		}else{	
+		SQLStatement+=" where MyNotifications.notifno = '"+CurrentNotifNo+"'"	
+		}
 
 
 	html5sql.process(SQLStatement,
@@ -189,8 +212,8 @@ border-radius: 15px;
 		<table width = "100%">
 			<TR height="70px">
 				<TD width = "20%" Valign="bottom" align="left">
-				<a href = "javascript:window.location.href='JobsNotifications.htm'"      class="ui-btn ui-btn-width ui-btn-inline ui-icon-back ui-corner-all ui-shadow ui-btn-icon-left">
-				Notifications</a></td>
+				<a id="backLink" href="javascript:goBack()"      class="ui-btn ui-btn-width ui-btn-inline ui-icon-back ui-corner-all ui-shadow ui-btn-icon-left">
+				<span class='txt'>Notifications</span></a></td>
 				<TD width = "10%" Valign="bottom" align="center"></TD>
 				<TD width = "40%" valign="Top" align= "center"><h1 style="font-size: 150%">
 				<B><a onclick="window.location.href='JobsHome.htm'" style="color:black; text-decoration:none;">MyJobs - Details</a></B></H1>
@@ -277,6 +300,11 @@ border-radius: 15px;
 
 
 <Script>
+if(SelectedCallback=='Order'){
+	$('#backLink .txt').text("Order Details");
+}else{
+	$('#backLink .txt').text("Notifications"); 
+}
 function showMap(type)
 {
 
@@ -284,7 +312,8 @@ window.location.href='JobsLocateOnMap.htm?CallBack=Notification&NotifNo='+Select
 }
 function GoToTasks()
 {
-loc="JobsNotificationDetailsTasks.htm?NotifNo="+SelectedNotifNo+"&Type="+"ZM"   //CurrentNotifType
+
+loc="JobsNotificationDetailsTasks.htm?NotifNo="+SelectedNotifNo+"&Type="+"ZM&JobNo="+SelectedJobNo+'&Status='+SelectedStatus+'&Callback='+SelectedCallback   //CurrentNotifType
 window.location.href=loc;
 }
 
