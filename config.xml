@@ -4,11 +4,11 @@
     <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id        = "com.phonegap.MyJobsPhone"
-        version   = "1.150306.1024">
+        version   = "1.150307.1230">
 
     <name>MyJobs</name>
     <description>
-        MJobs Tablet.
+        MyJobs Tablet.
     </description>
 
     <author href="#" email="Paul.ostridge@cgi.com">
