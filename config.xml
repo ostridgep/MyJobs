@@ -3,8 +3,8 @@
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
     <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
-        id        = "com.phonegap.MyJobsPhone"
-        version   = "1.150307.1230">
+        id        = "com.phonegap.MyJobs"
+        version   = "1.150318.0930">
 
     <name>MyJobs</name>
     <description>
