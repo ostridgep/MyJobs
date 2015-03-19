@@ -4,7 +4,7 @@
     <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
         id        = "com.phonegap.MyJobs"
-        version   = "1.150318.0930">
+        version   = "1.150319.1600">
 
     <name>MyJobs</name>
     <description>
