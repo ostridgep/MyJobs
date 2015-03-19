@@ -376,7 +376,7 @@ SQLStatement+="where MyRefNotifTypes.scenario = 'MAMDEMO'"
 var HTMLToOutput="";
 	html5sql.process(SQLStatement,
 	 function(transaction, results, rowsArray){
-			alert("found:"+rowsArray.length)
+			//alert("found:"+rowsArray.length)
 			for (var n = 0; n < rowsArray.length; n++) {
 				item = rowsArray[n];
 				if (n==0){
