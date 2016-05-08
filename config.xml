@@ -3,12 +3,12 @@
 <!-- config.xml reference: https://build.phonegap.com/docs/config-xml -->
     <widget xmlns     = "http://www.w3.org/ns/widgets"
         xmlns:gap = "http://phonegap.com/ns/1.0"
-        id        = "com.phonegap.MyJobs"
+        id        = "com.phonegap.MyJobsJQ"
         version   = "1.150319.1600">
 
-    <name>MyJobs</name>
+    <name>MyJobsJQ</name>
     <description>
-        MyJobs Tablet.
+        MyJobsJQ Tablet.
     </description>
 
     <author href="#" email="Paul.ostridge@cgi.com">
